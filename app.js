@@ -40,18 +40,3 @@ fetch("https://api.iq.inrix.com/findRoute?wp_1=37.770581%2C-122.442550&wp_2=37.7
   .then(response => response.text())
   .then(result => console.log(result))
   .catch(error => console.log('error', error));
-
-//This should return the times
-var myHeaders = new Headers();
-myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6Imw4bTg4djNvMGQiLCJ0b2tlbiI6eyJpdiI6IjU2YTNiN2RhY2Q1NGJmZThiMjk1ZGE0Y2RkMDZkZTAxIiwiY29udGVudCI6ImI4ZjU5MWQ0NWIyODNlNjk5NjI5ZTJlOTE4MjBjMzI4YTg4OGQ4ODFhN2FhZWM1YWMxMzhiYTNiZTExOTMwODRhOTEyZTk0YjE1ZjRjYTJiMmU3MDQ1YTRlYWZlZDk4NWRjMThkOTc3MWZiYTU0ZDgxMTc1ODdmOTk5YTIxYzFiNmRhMjg1NDYwZTk3YjM1YWY3ZmFmYmI2YWVhZGUxZWY0ZTQ5MGIyM2JhYzRkNTQzYWNmNGIzOTBjNzdmYmFlN2FkZmE4OTQ4Yjk2YWRiNjJiZGFkNjRiMTNlODgyZGIyMTkwMjFhYTEwMGQ0MzQ3MTY0ODk2NTQ4ZmJkMTE0MGMwYmE0YTVhYzYyMWNjNDgwYWNlMDQxN2ZmZDAxNzM5ZDM2YmM4ZWVmOTVmOTVhYjhkOWQ3YjM2NGMzY2JiMjU4NmEwNTQ1MWQwZDc5Mjc4MTFkODc4YjkyNGQ5ODhjYmMyNDkyNDUyNzZkOTllNjFjYzZiYTc0YzBkOTUyZmE4Zjk1MDY3NGI3NTMxZDQxOTliZjI0ZWQzZDlmYjJlOGVhZGU5NDk4YjI2YTVjYmNjZjAwOTE2ODAwMDIxNDUyMTE5OTE1NmFhOWU1M2E1ZTI1YmZmMjQ2ZmIxYTkyODEzNDIzNTY5YjNlOTc0MjlhZWFiMzU1YTYwOTcxMTI3ODMyMjg1N2RmMjNhM2E0ODM2MjViYjAzMTMxZDNkMjAyNTI1M2Y1YzgwMWUxOWE3ZDhkMjcxMTEyZmY5NDVkM2Y3ZGNhZWY5ODgyZjkyNDVkZDQ3NjFkNzdhOTIwZTYxODIwMjg2NmM4ZmIyZWZlNTFhMTEyNjNlOTdjNjhkNWY0ZWIxYTE5YWFlOWNlZTM2ZjgyY2FkODAzIn0sInNlY3VyaXR5VG9rZW4iOnsiaXYiOiI1NmEzYjdkYWNkNTRiZmU4YjI5NWRhNGNkZDA2ZGUwMSIsImNvbnRlbnQiOiJlOWMxZWJjNDdlMWIzYjZjOTIxMWVlZDA3NDA4YTc0YWExYmJhNmJhOTRiZGY2MWI5NzMzYTQ0ODlhM2QwNGI0YjcwNThlMWYwY2ZiZDUwMjBjNDA3ZTlhIn0sImp0aSI6IjE5YzRmNTczLWUxZmMtNGRiNS04YTIzLTdmNTQyYTk4ZWI5NiIsImlhdCI6MTY2ODMwNTQ5NCwiZXhwIjoxNjY4MzA5MDk0fQ.EeCLCW9jzlcIYq_6RU3aVDeS3tt8wUvBIGrhCHakPo4");
-
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
-
-fetch("https://api.iq.inrix.com/routeTravelTimes?routeId=20118055&departureTime=2022-11-14T08%3A22%3A14Z&travelTimeCount=5&travelTimeInterval=5\n", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
