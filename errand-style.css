@@ -1,0 +1,147 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+
+.text-box{
+    width: 90%;
+    color: #fff;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.text-box h1{
+    font-size: 45px;
+}
+
+.text-box p{
+    margin: 10px 0 20px;
+    font-size: 20px;
+    color: #fff;
+}
+
+/*--------User Info Section----------*/
+section h1{
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.input{
+    width: 80%;
+    margin: auto;
+    padding-top: 250px;
+    color:#fff;
+    text-align: left;
+}
+h1{
+    font-weight: 600;
+    font-size: 36px;;
+}
+p{
+    color: white;
+}
+
+.wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+}
+img{
+    width: 28vw;;
+    text-align: right;
+}
+.image{
+    flex-basis: 40%;
+}
+
+form {
+    width: 900vw;
+    max-width: 24em;
+    color:#fff;
+    padding-right: 250px;
+  }
+  
+  input {
+    border: 1px solid;
+    padding: 0.3em;
+    width: 100%;
+  }
+  
+  textarea {
+    width: 100%;
+    min-height: 6em;
+  }
+  
+  label {
+    display: block;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;;
+  }
+  
+  select {
+    font-size: 16px;
+  }
+
+  button{
+    width: 200px;
+    padding: 15px 0;
+    text-align: center;
+    margin: 20px 10px;
+    border-radius: 25px;
+    font-weight: bold;
+    border: 2px solid #009688;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    position: absolute;
+    overflow: hidden;
+}
+
+span{
+    background: #009688;
+    height: 100%;
+    width: 0;
+    border-radius: 25px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    transition: 0.5s;
+}
+
+button:hover span{
+    width: 100%;
+}
+
+button:hover{
+    border: none;
+}
+
+select{
+    padding-top: 0.1em;
+    width: 45%;
+    min-height: 1.8em;
+}
+
+.times{
+    display: flex;
+    margin-top: 20px;
+    position: relative;
+}
+
+.times select{
+    margin-top: 11px;;
+    width: 6em;
+    height: 2em;
+    margin-right: 5px;
+}
+
+.select-selected.select-arrow-active:after{
+    border-color: transparent transparent #000 transparent;
+}
