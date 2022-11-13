@@ -1,42 +1,65 @@
-const http = require('http');
-const fs = require('fs')
-const port = 3000;
+const express = require('express');
+const fetch = require("node-fetch");
+const { response } = require('express');
+const app = express();
+const port = 8000;
+app.set('json spaces', 2);
+const axios = require('axios');
 
-const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6ImNtMDNsaXA2dDYiLCJ0b2tlbiI6eyJpdiI6IjU1ZGUwYmU4ZDQwMDljZDVkMzY5YWE5ZjA3MzI5Y2EwIiwiY29udGVudCI6ImU2NWJkM2E3YzQyYjIyZjYwMDUwMWJlZjBlMTNiZjZmOTQ4Nzg4NDY5Yzc5YWFmYWE0NjM1MzdhNjg0NjJhOTc0NjE1ZGZiM2Q3MTIxOWZlYjNlN2M2MGY2NDg4NDJmM2E1NmE3M2EyMDg2MDNmNmI1OTU3MzcwOWZiNGZiOGQxNTkyYTMwNzg4MWZjN2ZjN2JlZWY5NTgxZDdiN2EzZTBiYzNkNThhNmZlMzRkZDM4ZWViOTMyNzZhMmRlZDI1NjgxNDkzNWUwNzhmYzBjMmZmNDA3YzUyNTQwZTM3NzU5ZWY3YjE5YTNlNWVjNGYwZjczM2Y5YThjMjlhMTk5MGRhMDBmZGQyOTYyZmE2YzM5NGVmZjE3MTNiMTM1OWY4YjA2MzQ4ZGY1ZTQ0YjdkNjEwYTE2NTgzYjYyNjk0ZWUyNzlhYjc0NDMwMTg5MDg2ZjYzYjJhZWY5NDIyZjExNGY1ZWVjOGU5ODJkOWU0NzhkNDdkZTRmMTcwYzNmMzQ2NmFhMWQ3ZGUzNTc2ZjdlMGFjNzY5MWNjODI4MWY4OGQ0NWJlOTExYTc2NTQ0ZjYxZDdhNDAxZmY1YzdiNzMyNzZhMjdhYjJjN2MwZjdhOGRkZTU2MjY3NDVmOWNkNzY1NzY0NTVkYTlhZTc0N2FlNzhkNjk5ZjFmMmM2MjlkNmY4Y2Y3ZTdhNDU0NWI3MGM1NWYwNTY5NGI3MDhmMDkzYzhlNzQzZjgwMGQ2YjhlMzAwNjQxZmE4YjkxN2FiMWE1MTg5ZGI5MjYxYWM0Y2Q1ZTQwOTdhZGIyMjM1YTk5OTJmYmViOGM4OWQ5YTk3YzI4ZThkYjg2MDNhMGM5Y2YzNTFjZDdmNThjZjc0ZWM3MDdiYjA2Mzg5In0sInNlY3VyaXR5VG9rZW4iOnsiaXYiOiI1NWRlMGJlOGQ0MDA5Y2Q1ZDM2OWFhOWYwNzMyOWNhMCIsImNvbnRlbnQiOiJjNjE3Y2Q5Y2VjMTkwNGY5MzU3ZDYyZTk2ODAwODI3NGUzYjZhMzQyYmQ0NWNlOGE5MjU5NTIwYjE2NWM3MGJhMjgyZmFkZjJjZjFhMGE4N2VkZDJiZTMxIn0sImp0aSI6IjVlZDRjY2I3LTRmYzItNGJhMy1iZmFkLTMwMzBiZmZlMzRkMSIsImlhdCI6MTY2ODMwMzEwMiwiZXhwIjoxNjY4MzA2NzAxfQ.nIAiAqnHTSZdtlLXCEyq_PhJ9ft9IATnv9xxmNO0YjE";
+// to query, call: http://localhost:8000/gettoken
+const url = 'https://api.iq.inrix.com/findRoute';
+
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6InhyNnhxbzViY2wiLCJ0b2tlbiI6eyJpdiI6IjYxM2M4MTVmY2ZhN2M3YWQzOGFkZWVmMjM5MmM4NDUwIiwiY29udGVudCI6ImM5MmIzYzEzYmE4ZmNiZWZhMWJjZWY3ZTZkNzUyNDExZDVmNjFhZWI1MTE5NTE1ZTE0MzhlZGUzYmM4ZTExNzE1YTYyOWVlZmNhNDA5ZmNmOWNhOWM0OGNiOTJmMTA0NWJkYWZlZjhlOTgwMzg0NDFjMTliNDFkODFmOGEyYzAzMGY0NzQ2YTY0NDc3YmU5ZDM3N2JiNTBkZWFiOWJjNzdkODhlM2Y5NGU5MjU4MTMzYmNjZTQ3MWFjYjdjOWE3MzMzZDcxNzY1YWFkZjI4YjQ2NGNkOTJiOTJmZjU4NjE1Y2M0ODY4MjJjNzFlODhkMjU1NjUwMzFjZTY3ZDg0MjgxMTRlN2I0YzlhMzZjNjczYWUxNTc3NDkxMWNmOTU4NjdiNTA3YzUwY2U1YTE1NDQzZmQyMmVlNDdjMmUyNWM1ODc1Nzg3NmQ3NjA2YzU5YzU0MTE5ZTBlYzZjOTIyYTYwZGE0NWFkNmZjMjA1ZjcxYjBhYWE0OTI3YjM2Y2JmNGMzN2U0ZjAyODVkYzNjYWYzZDMxZDRkY2E0NTQ1YTI1Mzg4ZTExMWFkZTU5MTc4M2ZmYmNhOTcwMmU2ZTE4ZTA4OWEwMDkzOTE5YmE0ZTczZmY3NzE2ZThjOTU4ZWQyNjdlODBiMzdlZDM1YzVkYWU5MGM4NTZmNTY4OGZjZDc2ZjM1NjgwYjg5Njk5OTk4MDZjM2I5YjIzY2U3ZGU0MmFiNDU1OWUzNWRlOGQ3Mjc3YWFhMTA0NGY2MTZlNWViZmVhOWVmOTgzNGY3M2RmODBmMzE1ZTMwYmMxZjQwMDIyYWI0MWIxNzFkNTliMzNiOGM1OTRhYzc2YTBlN2JmNzliNjIxMjkxMmQ2OGJmODdmOWFlZjgyIn0sInNlY3VyaXR5VG9rZW4iOnsiaXYiOiI2MTNjODE1ZmNmYTdjN2FkMzhhZGVlZjIzOTJjODQ1MCIsImNvbnRlbnQiOiJjYjMzMWUyOGVkYTRjN2Q2YWJiM2Y1NWM1MTQ2Mjk0ZmYyZDA2MWNjNGQxMzQwMzkxMzQ4OTNhM2Q4YmQyODdhNjM2OTk5OWE4MjE0OGNjMzg0YWJlYmIyIn0sImp0aSI6ImFmZGI5MjYyLWMzNGMtNDQxOS04ZjI4LWFiM2ZmNDZiZDhkMyIsImlhdCI6MTY2ODMwNjUzMywiZXhwIjoxNjY4MzEwMTMzfQ.ZYAqrwTHzoUwAWz5b4mgcpkqdrjmOjRgfTwHUfl89G4";
 
 
-const server = http.createServer(function(req, res){
-    res.writeHead(200, {'Content-Type': 'text/html'})
-    fs.readFile('index.html', function(error, data){
-        if(error){
-            res.writeHead(404)
-            res.write('Error: File not found')
-        } else{
-            res.write(data)
-        }
-        res.end()
-    })
+
+app.get('/gettoken', async function (req, res) {
+
+    //Set up URL to query
+    let appId = "Insert AppId here";
+    let hashToken = "Insert HashToken here";
+    let url = `https://api.iq.inrix.com/auth/v1/appToken?appId=xr6xqo5bcl&hashToken=eHI2eHFvNWJjbHx4V3ZVR0IyQnJqYUdmMGNYZDNmZlo2NTg0UnlITkdmckVpNjlUQzE3`;
+
+    //Set up query method
+    var requestOptions = {
+        method: 'GET'
+    };
+
+    //Query INRIX for token
+    let response = await fetch(url, requestOptions);
+    let json = await response.json();
+    let output = json.result.token;
+
+    //Return token
+    res.json({
+        token: output,
+    });
 })
 
-// this should return the route ID
-server.listen(port, function(error){
-    if(error){
-        console.log("Something went wrong", error)
-    }else{
-        console.log('Server is listening on port ' +port)
+app.get('/route', async function (req, res) {
+    // var http = new XMLHttpRequest();
+
+    try {
+        const response = await axios.get(url, {
+            params: {
+                wp_1: "37.8044,-122.4370",
+                wp_2: "37.7943,-122.4349",
+                format: "json",
+                routeOutputFields: "P"
+            },
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        res.json(response?.data);
+    } catch (error) {
+        console.error(error);
+        res.json({
+            "error": "unknown error"
+        })
     }
+
 })
 
-var myHeaders = new Headers();
-myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6Imw4bTg4djNvMGQiLCJ0b2tlbiI6eyJpdiI6IjU2YTNiN2RhY2Q1NGJmZThiMjk1ZGE0Y2RkMDZkZTAxIiwiY29udGVudCI6ImI4ZjU5MWQ0NWIyODNlNjk5NjI5ZTJlOTE4MjBjMzI4YTg4OGQ4ODFhN2FhZWM1YWMxMzhiYTNiZTExOTMwODRhOTEyZTk0YjE1ZjRjYTJiMmU3MDQ1YTRlYWZlZDk4NWRjMThkOTc3MWZiYTU0ZDgxMTc1ODdmOTk5YTIxYzFiNmRhMjg1NDYwZTk3YjM1YWY3ZmFmYmI2YWVhZGUxZWY0ZTQ5MGIyM2JhYzRkNTQzYWNmNGIzOTBjNzdmYmFlN2FkZmE4OTQ4Yjk2YWRiNjJiZGFkNjRiMTNlODgyZGIyMTkwMjFhYTEwMGQ0MzQ3MTY0ODk2NTQ4ZmJkMTE0MGMwYmE0YTVhYzYyMWNjNDgwYWNlMDQxN2ZmZDAxNzM5ZDM2YmM4ZWVmOTVmOTVhYjhkOWQ3YjM2NGMzY2JiMjU4NmEwNTQ1MWQwZDc5Mjc4MTFkODc4YjkyNGQ5ODhjYmMyNDkyNDUyNzZkOTllNjFjYzZiYTc0YzBkOTUyZmE4Zjk1MDY3NGI3NTMxZDQxOTliZjI0ZWQzZDlmYjJlOGVhZGU5NDk4YjI2YTVjYmNjZjAwOTE2ODAwMDIxNDUyMTE5OTE1NmFhOWU1M2E1ZTI1YmZmMjQ2ZmIxYTkyODEzNDIzNTY5YjNlOTc0MjlhZWFiMzU1YTYwOTcxMTI3ODMyMjg1N2RmMjNhM2E0ODM2MjViYjAzMTMxZDNkMjAyNTI1M2Y1YzgwMWUxOWE3ZDhkMjcxMTEyZmY5NDVkM2Y3ZGNhZWY5ODgyZjkyNDVkZDQ3NjFkNzdhOTIwZTYxODIwMjg2NmM4ZmIyZWZlNTFhMTEyNjNlOTdjNjhkNWY0ZWIxYTE5YWFlOWNlZTM2ZjgyY2FkODAzIn0sInNlY3VyaXR5VG9rZW4iOnsiaXYiOiI1NmEzYjdkYWNkNTRiZmU4YjI5NWRhNGNkZDA2ZGUwMSIsImNvbnRlbnQiOiJlOWMxZWJjNDdlMWIzYjZjOTIxMWVlZDA3NDA4YTc0YWExYmJhNmJhOTRiZGY2MWI5NzMzYTQ0ODlhM2QwNGI0YjcwNThlMWYwY2ZiZDUwMjBjNDA3ZTlhIn0sImp0aSI6IjE5YzRmNTczLWUxZmMtNGRiNS04YTIzLTdmNTQyYTk4ZWI5NiIsImlhdCI6MTY2ODMwNTQ5NCwiZXhwIjoxNjY4MzA5MDk0fQ.EeCLCW9jzlcIYq_6RU3aVDeS3tt8wUvBIGrhCHakPo4");
-
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
-
-fetch("https://api.iq.inrix.com/findRoute?wp_1=37.770581%2C-122.442550&wp_2=37.765297%2C-122.442527&format=json\n", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
+//Starting server using listen function
+app.listen(port, function () {
+    console.log("Server has been started at " + port);
+})
