@@ -21,7 +21,7 @@ const server = http.createServer(function(req, res){
         res.end()
     })
 })
-//ytcutrctr
+
 server.listen(port, function(error){
     if(error){
         console.log("Something went wrong", error)
