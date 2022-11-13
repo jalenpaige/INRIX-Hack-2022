@@ -53,44 +53,88 @@ app.get('/gettoken', async function (req, res) {
 })
 
 app.get('/route', async function (req, res) {
-    // var http = new XMLHttpRequest();
 
     const params = req.query;
+    //to change the UTC by 30 minute intervals for the time period
+    let d;
+    let start = "2022-11-15T00:00:00Z";
+
+    //Start time in UTC
+    d = new Date(start);
+
+
+    //Increments by 60 minutes
+    function addMinutes(date,minutes){
+        return new Date(date.getTime()+minutes*60000);
+    }
     
-    if (!params.wp_1 || !params.wp_2) {
+    /*if (!params.wp_1 || !params.wp_2) {
         return res.json({
             "error": "missing params"
         })
+    }*/
+    var times = new Array();
+    var eta_array = new Array();
+   for(let i = 0; i <= 9; i++)
+    {
+        d = addMinutes(d,60);
     }
-    try {
-        const token = await getToken();
-        const response = await axios.get(url, {
-            params: {
-                wp_1: params.wp_1,
-                wp_2: params.wp_2,
-                //another parameter with UTC time
-                format: "json",
-                routeOutputFields: "P"
-            },
-            headers: { Authorization: `Bearer ${token}` }
-        });
+    for(let j = 0; j <= 15-9; j++){
+        try {
+            const token = await getToken();
+            const response = await axios.get(url, {
+                params: {
+                    wp_1: "37.8044,-122.4370",
+                    wp_2: "37.7943, -122.4349",
+                    departureTime: d,
+                    format: "json",
+                    routeOutputFields: "P"
+                },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+        
+            const data = response.data;
 
-        const data = response.data;
+            const travelTimeMinutes = data.result.trip.routes[0].travelTimeMinutes;
+            const uncongested = data.result.trip.routes[0].uncongestedTravelTimeMinutes;
+            const departureTime = params.departureTime;
+            
+            times[j] = travelTimeMinutes;
+            d = addMinutes(d,60);
 
-        const travelTimeMinutes = data.result.trip.routes[0].travelTimeMinutes;
-        const uncongested = data.result.trip.routes[0].uncongestedTravelTimeMinutes;
-
-        return res.json({
-            clear: uncongested,
-            current: travelTimeMinutes
-        });
-    } catch (error) {
-        console.error(error);
-        return res.json({
-            "error": "unknown error"
-        })
+            return res.json({
+                uncongestedTravelTime: uncongested,
+                travelTimeMinutes: travelTimeMinutes,
+                dpt: departureTime
+                
+            });
+          } catch (error) {
+                console.error(error);
+                return res.json({
+                    "error": "unknown error"
+                })
+            }
+            
+            /*eta_array = travelTimeMinutes;
+            console.log("Estimated time of arrival is:"+eta_array[i]);*/
+            
     }
+    /*let f = times[0];
+    let ind = 0;
+    for(let k = 0; k < times.length; k++) {
+        if(times[k] < f) {
+            f = times[k];
+            ind = k;
+        }
+        console.log(times[k])
+    }
+    ind = ind + 9;
 
+    return res.json({
+        traveltimes: times
+    })*/
+    // f is the time it takes to get to the place
+    // ind is the hour that the fastest time should be at
 })
 
 //Starting server using listen function
