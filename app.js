@@ -2,12 +2,6 @@ const http = require('http');
 const fs = require('fs')
 const port = 3000;
 
-const url = 'http://localhost:8000/gettoken';
-fetch(url)
-.then(data => data.json())
-.then((json) => {
-    alert(JSON.stringify(json));
-})
 
 const server = http.createServer(function(req, res){
     res.writeHead(200, {'Content-Type': 'text/html'})
